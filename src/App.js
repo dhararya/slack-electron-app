@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
-import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
@@ -43,61 +41,21 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
-   //username
-   const [username, setUsername] = useState("");
-   //unique link extension should the user choose to save
-   const [password, setPassword] = useState("");
-
-   function handleChangeUsername(e){
-    setUsername(e.target.value);
-  }
-  
-  function handleChangePassword(e){
-    setPassword(e.target.value);
-  }
-
+   
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
+
         <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            handleChange = {handleChangeUsername}
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            handleChange = {handleChangePassword}
-            autoComplete="current-password"
-          />
-      
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
+        <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=896143073510.2114279949665">
+          <img 
+          alt="Sign in with Slack" 
+          align="center"
+          height="100" width="402" 
+          src="https://platform.slack-edge.com/img/sign_in_with_slack.png" 
+          srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" />
+          </a>
         </form>
       </div>
       <Box mt={8}>
