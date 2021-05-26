@@ -39,25 +39,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 export default function SignIn() {
   const classes = useStyles();
+  const [isLogged, setisLogged] =  useState(false);
+
+  function renderScreen(){
+    if (!isLogged){
+      return (
+        <div className={classes.paper}>
+  
+          <form className={classes.form} noValidate>
+          <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=896143073510.2114279949665">
+            <img 
+            alt="Sign in with Slack" 
+            align="center"
+            height="100" width="402" 
+            src="https://platform.slack-edge.com/img/sign_in_with_slack.png" 
+            srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" 
+          />
+            </a>
+          </form>
+        </div>
+      )
+    } else {
+      return (
+          <div className={classes.paper}>
+            <h2>Hi</h2>
+          </div>
+      )
+    }
+  }
    
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
-
-        <form className={classes.form} noValidate>
-        <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=896143073510.2114279949665">
-          <img 
-          alt="Sign in with Slack" 
-          align="center"
-          height="100" width="402" 
-          src="https://platform.slack-edge.com/img/sign_in_with_slack.png" 
-          srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" />
-          </a>
-        </form>
-      </div>
+      {renderScreen()}
       <Box mt={8}>
         <Copyright />
       </Box>
