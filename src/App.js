@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import axios from 'axios';
 
 function Copyright() {
   return (
@@ -39,13 +40,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+let tempCode ="";
 export default function SignIn() {
   const classes = useStyles();
-  const [isLogged, setisLogged] =  useState(false);
+
+
+  function accessCode(){
+      const url = window.location.href;
+      let start = url.indexOf("code=")+5
+      let end = url.indexOf("&");
+      let tempCode = url.slice(start, end); 
+      const CLIENT_ID = '896143073510.2114279949665';
+      const CLIENT_SECRET = 'a70150fbabc8371d6a443a9ffa68fa42';
+
+      axios.get(`https://slack.com/api/oauth.v2.access?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${tempCode}`)
+      .then((response) => {
+        console.log(response["data"]["authed_user"]["access_token"]);
+      });
+  }
 
   function renderScreen(){
-    if (!isLogged){
+    if (window.location.href === "http://localhost:3000/"){
       return (
         <div className={classes.paper}>
   
@@ -63,9 +78,12 @@ export default function SignIn() {
         </div>
       )
     } else {
+      if (tempCode===""){
+        accessCode();
+      }
       return (
           <div className={classes.paper}>
-            <h2>Hi</h2>
+            <h2>{tempCode}</h2>
           </div>
       )
     }
