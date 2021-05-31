@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from 'axios';
+import NotificationPanel from '../src/NotificationPanel.js'
 
 function Copyright() {
   return (
@@ -83,9 +84,7 @@ export default function SignIn() {
         accessCode();
       }
       return (
-          <div className={classes.paper}>
-            <h2>{permCode}</h2>
-          </div>
+          <NotificationPanel permCode={permCode}/>
       )
     }
   }
