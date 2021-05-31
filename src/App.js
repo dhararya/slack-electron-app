@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let tempCode ="";
+let permCode ="";
 export default function SignIn() {
   const classes = useStyles();
 
@@ -55,7 +55,8 @@ export default function SignIn() {
 
       axios.get(`https://slack.com/api/oauth.v2.access?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${tempCode}`)
       .then((response) => {
-        console.log(response["data"]["authed_user"]["access_token"]);
+        permCode = response["data"]["authed_user"]["access_token"];
+        console.log(permCode);
       });
   }
 
@@ -78,12 +79,12 @@ export default function SignIn() {
         </div>
       )
     } else {
-      if (tempCode===""){
+      if (permCode===""){
         accessCode();
       }
       return (
           <div className={classes.paper}>
-            <h2>{tempCode}</h2>
+            <h2>{permCode}</h2>
           </div>
       )
     }
