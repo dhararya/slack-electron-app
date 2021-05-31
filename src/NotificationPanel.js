@@ -36,7 +36,7 @@ export default function MusicalGIF(props) {
                 heading='Notification Alerts'
                 sortedByKey={true}
                 showDate={true}
-                size={64}
+                size={96}
                 color="yellow"
             />
         </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
@@ -41,9 +41,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let permCode ="";
 export default function SignIn() {
   const classes = useStyles();
+  const [permCode, setpermCode] = useState("");
 
 
   function accessCode(){
@@ -56,8 +56,7 @@ export default function SignIn() {
 
       axios.get(`https://slack.com/api/oauth.v2.access?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${tempCode}`)
       .then((response) => {
-        permCode = response["data"]["authed_user"]["access_token"];
-        console.log(permCode);
+        setpermCode(response["data"]["authed_user"]["access_token"]);
       });
   }
 
