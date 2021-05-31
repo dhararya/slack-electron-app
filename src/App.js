@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const [permCode, setpermCode] = useState("");
+  const [userID, setuserID] = useState("");
 
 
   function accessCode(){
@@ -51,13 +52,15 @@ export default function SignIn() {
       let start = url.indexOf("code=")+5
       let end = url.indexOf("&");
       let tempCode = url.slice(start, end); 
-      const CLIENT_ID = '896143073510.2114279949665';
-      const CLIENT_SECRET = 'a70150fbabc8371d6a443a9ffa68fa42';
+      const CLIENT_ID = '2133673209201.2118031791525';
+      const CLIENT_SECRET = '26ff289859cc40a74228df1ea498ff2b';
 
       axios.get(`https://slack.com/api/oauth.v2.access?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${tempCode}`)
       .then((response) => {
         setpermCode(response["data"]["authed_user"]["access_token"]);
+        setuserID(response["data"]["authed_user"]["id"]);
       });
+
   }
 
   function renderScreen(){
@@ -66,7 +69,7 @@ export default function SignIn() {
         <div className={classes.paper}>
   
           <form className={classes.form} noValidate>
-          <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=896143073510.2114279949665">
+          <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=2133673209201.2118031791525">
             <img 
             alt="Sign in with Slack" 
             align="center"
@@ -83,7 +86,7 @@ export default function SignIn() {
         accessCode();
       }
       return (
-          <NotificationPanel permCode={permCode}/>
+          <NotificationPanel permCode={permCode} userID={userID}/>
       )
     }
   }
