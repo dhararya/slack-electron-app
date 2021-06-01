@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MusicalGIF(props) {
     const classes = useStyles();
-    const slackAppCode = 'xoxp-2133673209201-2106286474327-2133731794705-b9769bd6443fcddf4433f7d1aa92479c';
+    const slackAppCode = 'xoxp-2133673209201-2106286474327-2123875675954-257d0c17781f6a2ffe223137c49bd803';
 
     // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
     const { WebClient, LogLevel } = require("@slack/web-api");
@@ -32,8 +32,19 @@ export default function MusicalGIF(props) {
     try {
       // Call the conversations.list method using the WebClient
       const result = await client.conversations.list({types: "public_channel,private_channel,mpim,im"});
-
       saveConversations(result.channels);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  } 
+
+  //Get the last time a conversation was read
+  async function getLastRead(conversationId) {
+    try {
+      // Call the conversations.list method using the WebClient
+      const result = await client.conversations.info({channel: conversationId});
+      conversationsStore[conversationId].push(result["channel"]["last_read"]);
     }
     catch (error) {
       console.error(error);
@@ -49,7 +60,15 @@ export default function MusicalGIF(props) {
       conversationId = conversation["id"];
       
       // Store the entire conversation object (you may not need all of the info)
-      conversationsStore[conversationId] = conversation;
+      // Store information only if conversation is an unarchived im that is not a self-message and not sent from the Slack bot
+      if ((conversation["is_archived"]===false && conversation["is_im"]===true &&
+       conversation["user"]!==props.userID && conversation["user"]!=="USLACKBOT") || 
+        (conversation["is_archived"]===false && conversation["is_im"]===false)){
+          //Extracting the type of conversation from conversation object
+          let type = (conversation["is_channel"] ? "channel" : (conversation["is_group"] ? "group" : (conversation["is_im"] ? "im" : "mpim")));
+          getLastRead(conversationId);
+          conversationsStore[conversationId] = [type];
+      }
     });
   }
 
