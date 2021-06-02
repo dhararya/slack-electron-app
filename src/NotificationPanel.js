@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-export default function MusicalGIF(props) {
+export default function NotificationPanel(props) {
     const classes = useStyles();
     const slackAppCode = 'xoxp-2133673209201-2106286474327-2123875675954-257d0c17781f6a2ffe223137c49bd803';
 
@@ -26,7 +26,10 @@ export default function MusicalGIF(props) {
       logLevel: LogLevel.DEBUG
     });
 
+    delete client["axios"].defaults.headers["User-Agent"];
+
   let conversationsStore = {};
+  let messageStore = {};
 
   async function populateConversationStore() {
     try {
@@ -51,13 +54,33 @@ export default function MusicalGIF(props) {
     }
   } 
 
+  async function populateMessages(){
+    const keys = Object.keys(conversationsStore);
+    for (const key in keys){
+      let conversationId = keys[key];
+      let ts = conversationsStore[conversationId][1];
+      try {
+        let result = await client.conversations.history({channel: conversationId});
+        console.log(result["messages"])
+        for (var messageCount in result["messages"]){
+          if (ts<result["messages"][messageCount]["ts"]){
+            messageStore[result["messages"][messageCount]["ts"]] = [result["messages"][messageCount], conversationId];
+          }
+        }
+      }
+      catch (error){
+        console.log(error)
+      }
+    }
+  }
+
   // Put conversations into the JavaScript object
   function saveConversations(conversationsArray) {
     let conversationId = '';
     
     conversationsArray.forEach(function(conversation){
       // Key conversation info on its unique ID
-      conversationId = conversation["id"];
+      conversationId = String(conversation["id"]);
       
       // Store the entire conversation object (you may not need all of the info)
       // Store information only if conversation is an unarchived im that is not a self-message and not sent from the Slack bot
@@ -66,14 +89,21 @@ export default function MusicalGIF(props) {
         (conversation["is_archived"]===false && conversation["is_im"]===false)){
           //Extracting the type of conversation from conversation object
           let type = (conversation["is_channel"] ? "channel" : (conversation["is_group"] ? "group" : (conversation["is_im"] ? "im" : "mpim")));
+          conversationsStore[conversationId] = [];
+          conversationsStore[conversationId].push(type);
           getLastRead(conversationId);
-          conversationsStore[conversationId] = [type];
       }
     });
   }
 
-  populateConversationStore();
-  console.log(conversationsStore);
+
+  async function populateAll() {
+    await populateConversationStore();
+    await populateMessages();
+    console.log(messageStore);
+  } 
+  populateAll();
+  
 
     let data = [
         {
