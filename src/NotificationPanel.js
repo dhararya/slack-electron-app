@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
 export default function NotificationPanel(props) {
     const classes = useStyles();
     const slackAppCode = 'xoxp-2133673209201-2106286474327-2123875675954-257d0c17781f6a2ffe223137c49bd803';
+    let notifications = [];
 
     // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
     const { WebClient, LogLevel } = require("@slack/web-api");
@@ -92,34 +93,56 @@ export default function NotificationPanel(props) {
           conversationsStore[conversationId] = [];
           conversationsStore[conversationId].push(type);
           getLastRead(conversationId);
+          conversationsStore[conversationId].push(conversation);
       }
     });
   }
 
+  async function populateNotifications(){
+    const keys = Object.keys(messageStore);
+    for (const key in keys){
+      let notificationObj = {};
+      let ts = keys[key];
+      notificationObj["timestamp"] = ts;
+      let message = messageStore[ts][0]["text"]
+      let userID = messageStore[ts][0]["text"]
+      let conversationID = (messageStore[ts][1])
+      let channel = "";
+      let userName = "A user"
+      if (conversationsStore[conversationID][0] === "channel"){
+        channel = conversationsStore[conversationID][2]["channel"]["name"];
+        console.log(channel);
+      }
+      try {
+        let result = await client.user.info({user: userID});
+        userName = result["user"]["real_name"];
+      }
+      catch (error){
+        console.log(error)
+      }
+      let update = ""
+      if (channel===""){
+        update = `${userName} said "${message}"`
+      } else {
+        update = `${userName} said "${message} on the #${channel} channel"`
+      }
+      notificationObj["update"] = update;
+      notifications.push(notificationObj);
+    }
+  }
 
   async function populateAll() {
     await populateConversationStore();
     await populateMessages();
-    console.log(messageStore);
+    await populateNotifications();
   } 
   populateAll();
   
 
-    let data = [
-        {
-          "update":"70 new employees are shifted",
-          "timestamp":1596119688264
-        },
-        {
-          "update":"Time to take a Break, TADA!!!",
-          "timestamp":1596119686811
-        }
-      ];
-
     return (
         <div className = {classes.conatiner}>
             <NotifyMe
-                data={data}
+                data={notifications}
                 storageKey='notific_key'
                 notific_key='timestamp'
                 notific_value='update'
