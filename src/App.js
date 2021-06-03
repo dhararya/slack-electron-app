@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
@@ -6,7 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from 'axios';
+import NotificationPanel from '../src/NotificationPanel.js'
 
+//Copyright notice
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -40,33 +42,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let permCode ="";
 export default function SignIn() {
   const classes = useStyles();
+  //permanent code given by slack when user is authenticated
+  const [permCode, setpermCode] = useState("");
+  //userID on slack
+  const [userID, setuserID] = useState("");
 
-
+  //Retrieves the temprorary access code followed by the permanent code
   function accessCode(){
       const url = window.location.href;
       let start = url.indexOf("code=")+5
       let end = url.indexOf("&");
       let tempCode = url.slice(start, end); 
-      const CLIENT_ID = '896143073510.2114279949665';
-      const CLIENT_SECRET = 'a70150fbabc8371d6a443a9ffa68fa42';
+      
+      const CLIENT_ID; //Put your client_id 
+      const CLIENT_SECRET; //Put your client_secret
 
       axios.get(`https://slack.com/api/oauth.v2.access?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${tempCode}`)
       .then((response) => {
-        permCode = response["data"]["authed_user"]["access_token"];
-        console.log(permCode);
+        setpermCode(response["data"]["authed_user"]["access_token"]);
+        setuserID(response["data"]["authed_user"]["id"]);
       });
+
   }
 
+  //Conditionally renders sign in button if user not signed in
+  //Notification bell is the user is signed in
   function renderScreen(){
     if (window.location.href === "http://localhost:3000/"){
       return (
         <div className={classes.paper}>
   
           <form className={classes.form} noValidate>
-          <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=896143073510.2114279949665">
+          <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=2133673209201.2118031791525">
             <img 
             alt="Sign in with Slack" 
             align="center"
@@ -83,9 +92,7 @@ export default function SignIn() {
         accessCode();
       }
       return (
-          <div className={classes.paper}>
-            <h2>{permCode}</h2>
-          </div>
+          <NotificationPanel permCode={permCode} userID={userID}/>
       )
     }
   }
