@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
-    const slackAppCode = 'xoxp-2133673209201-2106286474327-2123875675954-257d0c17781f6a2ffe223137c49bd803';
+    const slackAppCode = 'xoxp-2133673209201-2106286474327-2118436530871-1c967ea439464fa2e96c6fa245f3bead';
     let notifications = [];
 
     // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
@@ -27,6 +27,7 @@ export default function NotificationPanel(props) {
       logLevel: LogLevel.DEBUG
     });
 
+    //Work around lots of error messages on console
     delete client["axios"].defaults.headers["User-Agent"];
 
   let conversationsStore = {};
@@ -55,14 +56,14 @@ export default function NotificationPanel(props) {
     }
   } 
 
+  //Gets all messages that were not opened yet
   async function populateMessages(){
     const keys = Object.keys(conversationsStore);
     for (const key in keys){
       let conversationId = keys[key];
-      let ts = conversationsStore[conversationId][1];
+      let ts = conversationsStore[conversationId][2];
       try {
         let result = await client.conversations.history({channel: conversationId});
-        console.log(result["messages"])
         for (var messageCount in result["messages"]){
           if (ts<result["messages"][messageCount]["ts"]){
             messageStore[result["messages"][messageCount]["ts"]] = [result["messages"][messageCount], conversationId];
@@ -98,23 +99,26 @@ export default function NotificationPanel(props) {
     });
   }
 
+  //Converts the data we have pulled into a format that can be parsed and understood
+  //by our notification object
   async function populateNotifications(){
     const keys = Object.keys(messageStore);
     for (const key in keys){
       let notificationObj = {};
       let ts = keys[key];
-      notificationObj["timestamp"] = ts;
+      console.log(ts);
+      notificationObj["timestamp"] = parseFloat(ts);
+      console.log(notificationObj["timestamp"]);
       let message = messageStore[ts][0]["text"]
-      let userID = messageStore[ts][0]["text"]
+      let userID = messageStore[ts][0]["user"]
       let conversationID = (messageStore[ts][1])
       let channel = "";
       let userName = "A user"
       if (conversationsStore[conversationID][0] === "channel"){
-        channel = conversationsStore[conversationID][2]["channel"]["name"];
-        console.log(channel);
+        channel = conversationsStore[conversationID][1]["name"];
       }
       try {
-        let result = await client.user.info({user: userID});
+        let result = await client.users.info({user: userID});
         userName = result["user"]["real_name"];
       }
       catch (error){
@@ -131,13 +135,13 @@ export default function NotificationPanel(props) {
     }
   }
 
+  //Ensures objects are populated so following functions can retrieve and use them
   async function populateAll() {
     await populateConversationStore();
     await populateMessages();
     await populateNotifications();
   } 
   populateAll();
-  
 
     return (
         <div className = {classes.conatiner}>

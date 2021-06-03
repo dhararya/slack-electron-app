@@ -8,6 +8,7 @@ import Container from '@material-ui/core/Container';
 import axios from 'axios';
 import NotificationPanel from '../src/NotificationPanel.js'
 
+//Copyright notice
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -43,15 +44,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
+  //permanent code given by slack when user is authenticated
   const [permCode, setpermCode] = useState("");
+  //userID on slack
   const [userID, setuserID] = useState("");
 
-
+  //Retrieves the temprorary access code followed by the permanent code
   function accessCode(){
       const url = window.location.href;
       let start = url.indexOf("code=")+5
       let end = url.indexOf("&");
       let tempCode = url.slice(start, end); 
+      //Fill these in
       const CLIENT_ID = '2133673209201.2118031791525';
       const CLIENT_SECRET = '26ff289859cc40a74228df1ea498ff2b';
 
@@ -63,6 +67,8 @@ export default function SignIn() {
 
   }
 
+  //Conditionally renders sign in button if user not signed in
+  //Notification bell is the user is signed in
   function renderScreen(){
     if (window.location.href === "http://localhost:3000/"){
       return (
