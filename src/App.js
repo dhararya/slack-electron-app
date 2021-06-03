@@ -55,9 +55,9 @@ export default function SignIn() {
       let start = url.indexOf("code=")+5
       let end = url.indexOf("&");
       let tempCode = url.slice(start, end); 
-      //Fill these in
-      const CLIENT_ID = '2133673209201.2118031791525';
-      const CLIENT_SECRET = '26ff289859cc40a74228df1ea498ff2b';
+      
+      const CLIENT_ID; //Put your client_id 
+      const CLIENT_SECRET; //Put your client_secret
 
       axios.get(`https://slack.com/api/oauth.v2.access?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${tempCode}`)
       .then((response) => {

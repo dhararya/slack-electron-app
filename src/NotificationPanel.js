@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
-    const slackAppCode = 'xoxp-2133673209201-2106286474327-2118436530871-1c967ea439464fa2e96c6fa245f3bead';
+    const slackAppCode; //Put your Slack app code;
     let notifications = [];
 
     // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
@@ -106,9 +106,6 @@ export default function NotificationPanel(props) {
     for (const key in keys){
       let notificationObj = {};
       let ts = keys[key];
-      console.log(ts);
-      notificationObj["timestamp"] = parseFloat(ts);
-      console.log(notificationObj["timestamp"]);
       let message = messageStore[ts][0]["text"]
       let userID = messageStore[ts][0]["user"]
       let conversationID = (messageStore[ts][1])
@@ -126,11 +123,12 @@ export default function NotificationPanel(props) {
       }
       let update = ""
       if (channel===""){
-        update = `${userName} said "${message}"`
+        update = `${userName} dm-ed you saying "${message}"`
       } else {
-        update = `${userName} said "${message} on the #${channel} channel"`
+        update = `${userName} said "${message}" on the #${channel} channel`
       }
       notificationObj["update"] = update;
+      notificationObj["timestamp"] = parseFloat(ts)*1000;
       notifications.push(notificationObj);
     }
   }
@@ -142,6 +140,7 @@ export default function NotificationPanel(props) {
     await populateNotifications();
   } 
   populateAll();
+  console.log(notifications);
 
     return (
         <div className = {classes.conatiner}>
@@ -150,11 +149,11 @@ export default function NotificationPanel(props) {
                 storageKey='notific_key'
                 notific_key='timestamp'
                 notific_value='update'
-                heading='Notification Alerts'
-                sortedByKey={true}
+                heading='Slack Notification Alerts'
+                sortedByKey={false}
                 showDate={true}
                 size={96}
-                color="yellow"
+                color="red"
             />
         </div>
     );

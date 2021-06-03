@@ -2,6 +2,8 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+It returns to you your unread Slack messages across all channels, ims, mpims, and groups on a particular workspace.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -10,6 +12,10 @@ In the project directory, you can run:
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+This also an electron desktop app. You will need to configure the following scopes on you slack app: channels:history, channel:read, groups:history, groups:read, im:history, mpim:history, mpim:read, users:read.
+
+You will need to also fill your client_id, client_secret, and the app authentication code.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
@@ -68,4 +74,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `yarn build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
 # slack-electron-app
