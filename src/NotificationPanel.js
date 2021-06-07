@@ -5,7 +5,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { red } from "@material-ui/core/colors";
+import Notification from "../src/Notification.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   box:
   {
-    background: "#F3EAC0",
+    background: "#FFFEF2",
   }
 }));
 
@@ -125,6 +125,7 @@ export default function NotificationPanel(props) {
   //by our notification object
   async function populateNotifications(){
     const keys = Object.keys(messageStore);
+    let count =1;
     for (const key in keys){
       let notificationObj = {};
       let ts = keys[key];
@@ -145,12 +146,15 @@ export default function NotificationPanel(props) {
       }
       let update = ""
       if (channel===""){
-        update = `${userName} dm-ed you saying "${message}"`
-      } else {
-        update = `${userName} said "${message}" on the #${channel} channel`
-      }
-      notificationObj["update"] = update;
+        channel = "Instant Message"
+      } 
+      notificationObj["message"] = message;
+      notificationObj["id"] = count;
+      notificationObj["userName"] = userName;
+      notificationObj["channel"] = channel;
+      notificationObj["redirectURL"] = "";
       notificationObj["timestamp"] = parseFloat(ts)*1000;
+      count += 1;
       notifications.push(notificationObj);
     }
   }
@@ -166,73 +170,7 @@ export default function NotificationPanel(props) {
 
     return (
       <div className={classes.root}>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} className={classes.box}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Typography className={classes.heading}>General settings</Typography>
-          <Typography className={classes.secondaryHeading}>I am an accordion</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Nulla facilisi. Phasellus sollicitudin nulla et quam mattis feugiat. Aliquam eget
-            maximus est, id dignissim quam.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} className={classes.box}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
-        >
-          <Typography className={classes.heading}>Users</Typography>
-          <Typography className={classes.secondaryHeading}>
-            You are currently not an owner
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar
-            diam eros in elit. Pellentesque convallis laoreet laoreet.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')} className={classes.box}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3bh-content"
-          id="panel3bh-header"
-        >
-          <Typography className={classes.heading}>Advanced settings</Typography>
-          <Typography className={classes.secondaryHeading}>
-            Filtering has been entirely disabled for whole web server
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
-            vitae egestas augue. Duis vel est augue.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')} className={classes.box}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel4bh-content"
-          id="panel4bh-header"
-        >
-          <Typography className={classes.heading}>Personal data</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
-            vitae egestas augue. Duis vel est augue.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+        <Notification message="Hello!" id={1} userName = "Aryan Dhar" channel="#general" timestamp = {1623083265000}/>
     </div>
     );
 }
