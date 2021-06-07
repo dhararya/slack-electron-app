@@ -1,21 +1,43 @@
 import React from "react";
-import NotifyMe from 'react-notification-timeline';
 import { makeStyles } from '@material-ui/core/styles';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { red } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
-    conatiner: {
-      marginTop: theme.spacing(8),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    }
-  }));
+  root: {
+    width: '100%',
+    padding: '20px',
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0,
+    color: "#5E376D",
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: "#747080",
+  },
+  box:
+  {
+    background: "#F3EAC0",
+  }
+}));
 
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
-    const slackAppCode; //Put your Slack app code;
+    const slackAppCode = 'xoxp-2133673209201-2106286474327-2143800629986-812d637046ec92f0fabd15740b0b27d0'; //Put your Slack app code;
     let notifications = [];
+    const [expanded, setExpanded] = React.useState(false);
+
+    const handleChange = (panel) => (event, isExpanded) => {
+      setExpanded(isExpanded ? panel : false);
+    };
 
     // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
     const { WebClient, LogLevel } = require("@slack/web-api");
@@ -143,18 +165,74 @@ export default function NotificationPanel(props) {
   console.log(notifications);
 
     return (
-        <div className = {classes.conatiner}>
-            <NotifyMe
-                data={notifications}
-                storageKey='notific_key'
-                notific_key='timestamp'
-                notific_value='update'
-                heading='Slack Notification Alerts'
-                sortedByKey={false}
-                showDate={true}
-                size={96}
-                color="red"
-            />
-        </div>
+      <div className={classes.root}>
+      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} className={classes.box}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography className={classes.heading}>General settings</Typography>
+          <Typography className={classes.secondaryHeading}>I am an accordion</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Nulla facilisi. Phasellus sollicitudin nulla et quam mattis feugiat. Aliquam eget
+            maximus est, id dignissim quam.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} className={classes.box}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2bh-content"
+          id="panel2bh-header"
+        >
+          <Typography className={classes.heading}>Users</Typography>
+          <Typography className={classes.secondaryHeading}>
+            You are currently not an owner
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar
+            diam eros in elit. Pellentesque convallis laoreet laoreet.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')} className={classes.box}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel3bh-content"
+          id="panel3bh-header"
+        >
+          <Typography className={classes.heading}>Advanced settings</Typography>
+          <Typography className={classes.secondaryHeading}>
+            Filtering has been entirely disabled for whole web server
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
+            vitae egestas augue. Duis vel est augue.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')} className={classes.box}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel4bh-content"
+          id="panel4bh-header"
+        >
+          <Typography className={classes.heading}>Personal data</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
+            vitae egestas augue. Duis vel est augue.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+    </div>
     );
 }
