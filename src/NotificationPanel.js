@@ -6,6 +6,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Notification from "../src/Notification.js";
+import { Chat } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -134,8 +135,16 @@ export default function NotificationPanel(props) {
       let conversationID = (messageStore[ts][1])
       let channel = "";
       let userName = "A user"
+      let redirectURL = "";
       if (conversationsStore[conversationID][0] === "channel"){
         channel = conversationsStore[conversationID][1]["name"];
+      }
+      try {
+        let result = await client.chat.getPermalink({channel: String(conversationID), message_ts: ts});
+        redirectURL = result["permalink"];
+      }
+      catch (error){
+        console.log(error)
       }
       try {
         let result = await client.users.info({user: userID});
@@ -144,7 +153,6 @@ export default function NotificationPanel(props) {
       catch (error){
         console.log(error)
       }
-      let update = ""
       if (channel===""){
         channel = "Instant Message"
       } 
@@ -152,7 +160,7 @@ export default function NotificationPanel(props) {
       notificationObj["id"] = count;
       notificationObj["userName"] = userName;
       notificationObj["channel"] = channel;
-      notificationObj["redirectURL"] = "";
+      notificationObj["redirectURL"] = redirectURL;
       notificationObj["timestamp"] = parseFloat(ts)*1000;
       count += 1;
       notifications.push(notificationObj);
@@ -166,8 +174,6 @@ export default function NotificationPanel(props) {
     await populateNotifications();
   } 
   populateAll();
-  console.log(notifications);
-
     return (
       <div className={classes.root}>
         <Notification message="Hello!" id={1} userName = "Aryan Dhar" channel="#general" timestamp = {1623083265000}/>

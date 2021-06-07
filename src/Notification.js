@@ -5,6 +5,8 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,6 +26,11 @@ const useStyles = makeStyles((theme) => ({
   box:
   {
     background: "#FFFEF2",
+    padding: "10px"
+  },
+  button:
+  {
+    margin: theme.spacing(1),
   }
 }));
 
@@ -79,6 +86,9 @@ export default function NotificationPanel(props) {
             {`${props.userName}: ${props.message}`}
           </Typography>
         </AccordionDetails>
+        <Button color="secondary" className={classes.button} href={props.redirectURL}>
+            <b>Go to Slack</b>
+        </Button>
       </Accordion>
     );
 }
