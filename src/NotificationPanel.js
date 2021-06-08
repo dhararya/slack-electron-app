@@ -1,21 +1,34 @@
-import React from "react";
-import NotifyMe from 'react-notification-timeline';
+import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
+import Notification from "../src/Notification.js";
 
 const useStyles = makeStyles((theme) => ({
-    conatiner: {
-      marginTop: theme.spacing(8),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    }
-  }));
-
+  root: {
+    width: '100%',
+    padding: '20px',
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0,
+    color: "#5E376D",
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: "#747080",
+  },
+  box:
+  {
+    background: "#FFFEF2",
+  }
+}));
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
     const slackAppCode; //Put your Slack app code;
     let notifications = [];
+    const [display, setDisplay] = useState([]);
+
 
     // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
     const { WebClient, LogLevel } = require("@slack/web-api");
@@ -103,6 +116,7 @@ export default function NotificationPanel(props) {
   //by our notification object
   async function populateNotifications(){
     const keys = Object.keys(messageStore);
+    let count =1;
     for (const key in keys){
       let notificationObj = {};
       let ts = keys[key];
@@ -111,8 +125,16 @@ export default function NotificationPanel(props) {
       let conversationID = (messageStore[ts][1])
       let channel = "";
       let userName = "A user"
+      let redirectURL = "";
       if (conversationsStore[conversationID][0] === "channel"){
         channel = conversationsStore[conversationID][1]["name"];
+      }
+      try {
+        let result = await client.chat.getPermalink({channel: String(conversationID), message_ts: ts});
+        redirectURL = result["permalink"];
+      }
+      catch (error){
+        console.log(error)
       }
       try {
         let result = await client.users.info({user: userID});
@@ -121,14 +143,17 @@ export default function NotificationPanel(props) {
       catch (error){
         console.log(error)
       }
-      let update = ""
       if (channel===""){
-        update = `${userName} dm-ed you saying "${message}"`
-      } else {
-        update = `${userName} said "${message}" on the #${channel} channel`
-      }
-      notificationObj["update"] = update;
+        channel = "Instant Message"
+      } 
+      notificationObj["message"] = message;
+      notificationObj["id"] = count;
+      notificationObj["userName"] = userName;
+      notificationObj["channel"] = `#${channel}`;
+      notificationObj["redirectURL"] = redirectURL;
       notificationObj["timestamp"] = parseFloat(ts)*1000;
+      notificationObj["conversationID"] = conversationID;
+      count += 1;
       notifications.push(notificationObj);
     }
   }
@@ -138,23 +163,22 @@ export default function NotificationPanel(props) {
     await populateConversationStore();
     await populateMessages();
     await populateNotifications();
-  } 
-  populateAll();
-  console.log(notifications);
-
+    setDisplay(notifications);
+  };
+  useEffect(()=>{populateAll()}, []);
     return (
-        <div className = {classes.conatiner}>
-            <NotifyMe
-                data={notifications}
-                storageKey='notific_key'
-                notific_key='timestamp'
-                notific_value='update'
-                heading='Slack Notification Alerts'
-                sortedByKey={false}
-                showDate={true}
-                size={96}
-                color="red"
-            />
-        </div>
+      <div className={classes.root}>
+        {display.map(n => (<Notification
+          id={n.id}
+          timestamp={n.timestamp}
+          message={n.message}
+          userName={n.userName}
+          channel={n.channel}
+          redirectURL={n.redirectURL}
+          slackAppCode = {slackAppCode}
+          conversationID = {n.conversationID}
+    />))}
+          
+    </div>
     );
 }

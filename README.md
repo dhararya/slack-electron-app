@@ -13,9 +13,11 @@ In the project directory, you can run:
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-This also an electron desktop app. You will need to configure the following scopes on you slack app: channels:history, channel:read, groups:history, groups:read, im:history, mpim:history, mpim:read, users:read.
+This also an electron desktop app. You will need to configure the following scopes on you slack app: channels:history, channel:read, groups:history, groups:read, im:history, mpim:history, mpim:read, users:read, channels:write.
 
 You will need to also fill your client_id, client_secret, and the app authentication code.
+
+You will also need to use ngrok forwarding to your local URL.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
