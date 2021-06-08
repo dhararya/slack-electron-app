@@ -1,12 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Notification from "../src/Notification.js";
-import { Chat } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,16 +23,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
 export default function NotificationPanel(props) {
     const classes = useStyles();
     const slackAppCode = 'xoxp-2133673209201-2106286474327-2143800629986-812d637046ec92f0fabd15740b0b27d0'; //Put your Slack app code;
     let notifications = [];
-    const [expanded, setExpanded] = React.useState(false);
+    const [display, setDisplay] = useState([]);
 
-    const handleChange = (panel) => (event, isExpanded) => {
-      setExpanded(isExpanded ? panel : false);
-    };
 
     // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
     const { WebClient, LogLevel } = require("@slack/web-api");
@@ -159,7 +149,7 @@ export default function NotificationPanel(props) {
       notificationObj["message"] = message;
       notificationObj["id"] = count;
       notificationObj["userName"] = userName;
-      notificationObj["channel"] = channel;
+      notificationObj["channel"] = `#${channel}`;
       notificationObj["redirectURL"] = redirectURL;
       notificationObj["timestamp"] = parseFloat(ts)*1000;
       count += 1;
@@ -172,11 +162,20 @@ export default function NotificationPanel(props) {
     await populateConversationStore();
     await populateMessages();
     await populateNotifications();
-  } 
-  populateAll();
+    setDisplay(notifications);
+  };
+  useEffect(()=>{populateAll()}, []);
     return (
       <div className={classes.root}>
-        <Notification message="Hello!" id={1} userName = "Aryan Dhar" channel="#general" timestamp = {1623083265000}/>
+        {display.map(n => (<Notification
+          id={n.id}
+          timestamp={n.timestamp}
+          message={n.message}
+          userName={n.userName}
+          channel={n.channel}
+          redirectURL={n.redirectURL}
+    />))}
+          
     </div>
     );
 }
