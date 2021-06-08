@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
-    const slackAppCode = 'xoxp-2133673209201-2106286474327-2150114424946-a7fef6e51dda05b958e0d91235b1a76d'; //Put your Slack app code;
+    const slackAppCode; //Put your Slack app code;
     let notifications = [];
     const [display, setDisplay] = useState([]);
 
