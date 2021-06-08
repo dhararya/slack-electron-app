@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
-    const slackAppCode = 'xoxp-2133673209201-2106286474327-2143800629986-812d637046ec92f0fabd15740b0b27d0'; //Put your Slack app code;
+    const slackAppCode = 'xoxp-2133673209201-2106286474327-2150114424946-a7fef6e51dda05b958e0d91235b1a76d'; //Put your Slack app code;
     let notifications = [];
     const [display, setDisplay] = useState([]);
 
@@ -152,6 +152,7 @@ export default function NotificationPanel(props) {
       notificationObj["channel"] = `#${channel}`;
       notificationObj["redirectURL"] = redirectURL;
       notificationObj["timestamp"] = parseFloat(ts)*1000;
+      notificationObj["conversationID"] = conversationID;
       count += 1;
       notifications.push(notificationObj);
     }
@@ -174,6 +175,8 @@ export default function NotificationPanel(props) {
           userName={n.userName}
           channel={n.channel}
           redirectURL={n.redirectURL}
+          slackAppCode = {slackAppCode}
+          conversationID = {n.conversationID}
     />))}
           
     </div>
