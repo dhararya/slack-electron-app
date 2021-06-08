@@ -6,6 +6,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,18 +32,59 @@ const useStyles = makeStyles((theme) => ({
   button:
   {
     margin: theme.spacing(1),
-  }
+    margin: "15px",
+    padding: "10px"
+  },
+  text: {
+    margin: theme.spacing(1),
+    width: '25ch',
+  },
 }));
 
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
+    const [message, setMessage] = React.useState('');
 
+    //handles logic with Accordion components for expansion and contraction
     const handleChange = (panel) => (event, isExpanded) => {
       setExpanded(isExpanded ? panel : false);
     };
 
+    //Updates message based on what is written in the textfield
+    function handleKeyChange(e){
+        setMessage(e.target.value);
+    };
+    
+    //Delegates sending message if enter key is pressed
+    function sendKey(e){
+        if (e.charCode === 13){
+            e.preventDefault();
+            sendMessage();
+          }
+    }
+    function sendMessage(){
+        if (message !== ""){
+            const { WebClient, LogLevel } = require("@slack/web-api");
+
+            // WebClient insantiates a client that can call API methods
+            // When using Bolt, you can use either `app.client` or the `client` passed to listeners.
+            const client = new WebClient(props.slackAppCode, {
+            // LogLevel can be imported and used to make debugging simpler
+            logLevel: LogLevel.DEBUG
+            });
+
+            //Work around lots of error messages on console
+            delete client["axios"].defaults.headers["User-Agent"];
+
+            //sends message to Slack Channel
+            client.chat.postMessage({channel: props.conversationID, text: message});
+        }
+    }
+
+
+    //gets time difference between present time and passed in time
     function timeSince(date) {
 
         var seconds = Math.floor((new Date() - date) / 1000);
@@ -88,6 +130,11 @@ export default function NotificationPanel(props) {
         </AccordionDetails>
         <Button color="secondary" className={classes.button} href={props.redirectURL}>
             <b>Go to Slack</b>
+        </Button>
+        <br/>
+        <TextField className = {classes.text} required id="standard-required" label="Respond" onChange={handleKeyChange} defaultValue="" onKeyPress={sendKey}/>
+        <Button color="secondary" className={classes.button} onClick={sendMessage}>
+            <b>Send</b>
         </Button>
       </Accordion>
     );
