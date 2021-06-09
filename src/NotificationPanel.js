@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NotificationPanel(props) {
     const classes = useStyles();
-    const slackAppCode; //Put your Slack app code;
+    const slackAppCode=""; //Put your Slack app code;
     let notifications = [];
     const [display, setDisplay] = useState([]);
 
@@ -164,6 +164,7 @@ export default function NotificationPanel(props) {
     await populateMessages();
     await populateNotifications();
     setDisplay(notifications);
+    console.log(notifications);
   };
   useEffect(()=>{populateAll()}, []);
     return (

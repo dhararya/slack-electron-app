@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Checkbox from '@material-ui/core/Checkbox';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -39,6 +40,11 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     width: '25ch',
   },
+  check: {
+    margin: theme.spacing(1),
+    padding: "0px",
+    margin: "0px"
+  },
 }));
 
 
@@ -46,11 +52,38 @@ export default function NotificationPanel(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
     const [message, setMessage] = React.useState('');
+    const [checked, setChecked] = React.useState(false);
 
     //handles logic with Accordion components for expansion and contraction
     const handleChange = (panel) => (event, isExpanded) => {
       setExpanded(isExpanded ? panel : false);
     };
+
+    //Toggles Read/Unread status
+    const handleCheckChange = (event) => {
+      setChecked(event.target.checked);
+
+      const client = createClient();
+
+      
+      client.conversations.mark({channel: props.conversationID, ts: parseFloat(props.timestamp)/1000});
+
+    };
+
+    function createClient() {
+      const { WebClient, LogLevel } = require("@slack/web-api");
+
+      // WebClient insantiates a client that can call API methods
+      // When using Bolt, you can use either `app.client` or the `client` passed to listeners.
+      const client = new WebClient(props.slackAppCode, {
+      // LogLevel can be imported and used to make debugging simpler
+            logLevel: LogLevel.DEBUG
+      });
+
+      //Work around lots of error messages on console
+      delete client["axios"].defaults.headers["User-Agent"];
+      return client;
+    }
 
     //Updates message based on what is written in the textfield
     function handleKeyChange(e){
@@ -66,17 +99,7 @@ export default function NotificationPanel(props) {
     }
     function sendMessage(){
         if (message !== ""){
-            const { WebClient, LogLevel } = require("@slack/web-api");
-
-            // WebClient insantiates a client that can call API methods
-            // When using Bolt, you can use either `app.client` or the `client` passed to listeners.
-            const client = new WebClient(props.slackAppCode, {
-            // LogLevel can be imported and used to make debugging simpler
-            logLevel: LogLevel.DEBUG
-            });
-
-            //Work around lots of error messages on console
-            delete client["axios"].defaults.headers["User-Agent"];
+            const client = createClient();
 
             //sends message to Slack Channel
             client.chat.postMessage({channel: props.conversationID, text: message});
@@ -127,6 +150,12 @@ export default function NotificationPanel(props) {
           <Typography>
             {`${props.userName}: ${props.message}`}
           </Typography>
+          <Checkbox
+            className={classes.check}
+            checked={checked}
+            onChange={handleCheckChange}
+            inputProps={{ 'aria-label': 'primary checkbox' }}
+          />
         </AccordionDetails>
         <Button color="secondary" className={classes.button} href={props.redirectURL}>
             <b>Go to Slack</b>
